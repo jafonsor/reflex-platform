@@ -160,6 +160,9 @@ let iosSupport = system == "x86_64-darwin";
       wasm = nixpkgsFunc (nixpkgsArgs //
         (import wasmCross { inherit nixpkgsFunc; }).nixpkgsCrossArgs webGhcSrc "8.6.5"
       );
+      aarch64-multiplatform = nixpkgsFunc (nixpkgsArgs // {
+        crossSystem = lib.systems.examples.aarch64-multiplatform;
+      });
     };
 
     haskellLib = nixpkgs.haskell.lib;
@@ -231,6 +234,11 @@ let iosSupport = system == "x86_64-darwin";
   ghc8_6 = (makeRecursivelyOverridable nixpkgs.haskell.packages.ghc865).override {
     overrides = nixpkgs.haskell.overlays.combined;
   };
+
+  ghcLinuxAarch64 = (makeRecursivelyOverridable nixpkgsCross.aarch64-multiplatform.haskell.packages.ghc865).override {
+    overrides = nixpkgs.haskell.overlays.combined;
+  };
+
 
   # Takes a package set with `makeRecursivelyOverridable` and ensures that any
   # future overrides will be applied to both the package set itself and it's
@@ -304,6 +312,7 @@ in let this = rec {
           ghc
           ghcHEAD
           ghc8_6
+          ghcLinuxAarch64
           ghcIosSimulator64
           ghcIosAarch64
           ghcIosAarch64-8_6
